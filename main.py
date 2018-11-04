@@ -5,7 +5,7 @@ def main():
     e = Encrypter(2, 1)
     d = Decrypter(2, 1, e.gamma)
 
-    value = e.encrypt("Hell01".encode('ascii'))
+    value = e.encrypt("This is useless string".encode('ascii'))
     b = d.decrypt(value, e.gamma)
     print(b.decode('ascii'))
 
