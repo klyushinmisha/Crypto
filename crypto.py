@@ -12,8 +12,8 @@ class _Crypto:
         """Generates chunks from byte sequence and specified chunk size"""
         chunks = []
         b_len = len(b_seq)
-        beg_z = tuple(0 for i in range(b_len % self._size))
-        nseq = beg_z + tuple(b_seq)
+        end_z = tuple(0 for i in range(b_len % self._size))
+        nseq = tuple(b_seq) + end_z
         for i in range(0, len(nseq), self._size):
             chunk = nseq[i: i + self._size]
             res = 0
