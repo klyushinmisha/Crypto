@@ -11,11 +11,9 @@ class _Crypto:
     def gen_chunks(self, b_seq):
         """Generates chunks from byte sequence and specified chunk size"""
         chunks = []
-        b_len = len(b_seq)
-        end_z = tuple(0 for i in range(b_len % self._size))
-        nseq = tuple(b_seq) + end_z
-        for i in range(0, len(nseq), self._size):
-            chunk = nseq[i: i + self._size]
+
+        for i in range(0, len(b_seq), self._size):
+            chunk = b_seq[i: i + self._size]
             res = 0
             for b in chunk:
                 res <<= 8
@@ -50,6 +48,11 @@ class Encrypter(_Crypto):
         self._gamma = Random(time.time()).randint(0, 2 ** (size * 8) - 1)
 
     def encrypt(self, b_seq):
+        b_len = len(b_seq)
+        beg_z = tuple(0 for i in range((b_len + 1) % self._size))
+        beg_z = (len(beg_z), ) + beg_z
+        b_seq = beg_z + tuple(b_seq)
+
         chunks = self.gen_chunks(b_seq)
         n_chunks = tuple(map(self._encrypt_chunk, chunks))
         return self.gen_bytes(n_chunks)
@@ -72,7 +75,9 @@ class Decrypter(_Crypto):
     def decrypt(self, b_seq, gamma):
         chunks = self.gen_chunks(b_seq)
         n_chunks = tuple(map(self._decrypt_chunk, chunks))
-        return self.gen_bytes(n_chunks)
+        b = self.gen_bytes(n_chunks)
+        b = b[1+b[0]:]
+        return b
 
     def _decrypt_chunk(self, c):
         mask = 2 ** self._bias - 1
