@@ -3,6 +3,7 @@ import time
 
 
 class _Crypto:
+    """This is core of bytes <—> chunk conversion"""
     def __init__(self, size, bias):
         self._size = size
         self._bias = bias % (size*8)
@@ -23,12 +24,14 @@ class _Crypto:
         return chunks
 
     def gen_bytes(self, chunks):
+        """Generate bytes from chunk"""
         b_seq = []
         for c in chunks:
             b_seq += self._bytes_from_chunk(c)
         return bytes(b_seq)
 
     def _bytes_from_chunk(self, chunk):
+        """Helper for gen_bytes"""
         b_seq = []
         for i in range(self._size):
             value = (chunk >> ((self._size-1)*8 - i*8)) & (2**8 - 1)
@@ -37,6 +40,7 @@ class _Crypto:
 
 
 class Encrypter(_Crypto):
+    """Used to encrypt some bytes. Generates random gamma"""
     @property
     def gamma(self):
         return self._gamma
@@ -60,6 +64,7 @@ class Encrypter(_Crypto):
 
 
 class Decrypter(_Crypto):
+    """Used to decrypt some bytes, using input gamma"""
     def __init__(self, size, bias, gamma):
         super().__init__(size, bias)
         self._gamma = gamma
